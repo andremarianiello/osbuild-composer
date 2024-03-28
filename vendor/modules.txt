@@ -846,7 +846,7 @@ github.com/oracle/oci-go-sdk/v54/identity
 github.com/oracle/oci-go-sdk/v54/objectstorage
 github.com/oracle/oci-go-sdk/v54/objectstorage/transfer
 github.com/oracle/oci-go-sdk/v54/workrequests
-# github.com/osbuild/images v0.51.0
+# github.com/osbuild/images v0.51.0 => github.com/andremarianiello/osbuild-images v0.0.0-20240328153521-f903c0db550e
 ## explicit; go 1.19
 github.com/osbuild/images/internal/common
 github.com/osbuild/images/internal/environment
@@ -1398,3 +1398,4 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/osbuild/images => github.com/andremarianiello/osbuild-images v0.0.0-20240328153521-f903c0db550e

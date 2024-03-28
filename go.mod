@@ -218,3 +218,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/osbuild/images => github.com/andremarianiello/osbuild-images v0.0.0-20240328153521-f903c0db550e
