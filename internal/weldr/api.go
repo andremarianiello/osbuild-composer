@@ -139,8 +139,8 @@ var ValidBlueprintName = regexp.MustCompile(`^[a-zA-Z0-9._-]+$`)
 // NewTestAPI is used for the test framework, sets up a single distro
 func NewTestAPI(solver *dnfjson.BaseSolver, rr *reporegistry.RepoRegistry,
 	logger *log.Logger, storeFixture *store.Fixture, workers *worker.Server,
-	compatOutputDir string, distrosImageTypeDenylist map[string][]string) *API {
-
+	compatOutputDir string, distrosImageTypeDenylist map[string][]string,
+) *API {
 	api := &API{
 		store:                    storeFixture.Store,
 		workers:                  workers,
@@ -157,7 +157,8 @@ func NewTestAPI(solver *dnfjson.BaseSolver, rr *reporegistry.RepoRegistry,
 }
 
 func New(rr *reporegistry.RepoRegistry, stateDir string, solver *dnfjson.BaseSolver, df *distrofactory.Factory,
-	logger *log.Logger, workers *worker.Server, distrosImageTypeDenylist map[string][]string) (*API, error) {
+	logger *log.Logger, workers *worker.Server, distrosImageTypeDenylist map[string][]string,
+) (*API, error) {
 	if logger == nil {
 		logger = log.New(os.Stdout, "", 0)
 	}
@@ -326,7 +327,7 @@ func (api *API) PreloadMetadata() {
 			}
 
 			solver := api.solver.NewWithConfig(d.ModulePlatformID(), d.Releasever(), api.hostArch, d.Name())
-			_, err = solver.Depsolve([]rpmmd.PackageSet{{Include: []string{"filesystem"}, Repositories: repos}})
+			_, _, err = solver.Depsolve([]rpmmd.PackageSet{{Include: []string{"filesystem"}, Repositories: repos}})
 			if err != nil {
 				log.Printf("Problem preloading distro metadata for %s: %s", distro, err)
 			}
@@ -1080,7 +1081,6 @@ func (api *API) modulesListHandler(writer http.ResponseWriter, request *http.Req
 		names = strings.Split(modulesParam, ",")
 	}
 	packages, err := api.fetchPackageList(distroName, archName, names)
-
 	if err != nil {
 		errors := responseError{
 			ID:  "ModulesError",
@@ -1158,7 +1158,6 @@ func (api *API) projectsListHandler(writer http.ResponseWriter, request *http.Re
 		return
 	}
 	availablePackages, err := api.fetchPackageList(distroName, archName, []string{})
-
 	if err != nil {
 		errors := responseError{
 			ID:  "ProjectsError",
@@ -1246,7 +1245,6 @@ func (api *API) modulesInfoHandler(writer http.ResponseWriter, request *http.Req
 		return
 	}
 	foundPackages, err := api.fetchPackageList(distroName, archName, names)
-
 	if err != nil {
 		errors := responseError{
 			ID:  errorId,
@@ -1290,7 +1288,7 @@ func (api *API) modulesInfoHandler(writer http.ResponseWriter, request *http.Req
 		solver := api.solver.NewWithConfig(d.ModulePlatformID(), d.Releasever(), archName, d.Name())
 		for i := range packageInfos {
 			pkgName := packageInfos[i].Name
-			solved, err := solver.Depsolve([]rpmmd.PackageSet{{Include: []string{pkgName}, Repositories: repos}})
+			solved, _, err := solver.Depsolve([]rpmmd.PackageSet{{Include: []string{pkgName}, Repositories: repos}})
 			if err != nil {
 				errors := responseError{
 					ID:  errorId,
@@ -1377,7 +1375,7 @@ func (api *API) projectsDepsolveHandler(writer http.ResponseWriter, request *htt
 	}
 
 	solver := api.solver.NewWithConfig(d.ModulePlatformID(), d.Releasever(), archName, d.Name())
-	deps, err := solver.Depsolve([]rpmmd.PackageSet{{Include: names, Repositories: repos}})
+	deps, _, err := solver.Depsolve([]rpmmd.PackageSet{{Include: names, Repositories: repos}})
 	if err != nil {
 		errors := responseError{
 			ID:  "ProjectsError",
@@ -1573,7 +1571,6 @@ func (api *API) blueprintsDepsolveHandler(writer http.ResponseWriter, request *h
 		}
 
 		dependencies, err := api.depsolveBlueprint(*blueprint)
-
 		if err != nil {
 			blueprintsErrors = append(blueprintsErrors, responseError{
 				ID:  "BlueprintsError",
@@ -2284,7 +2281,6 @@ func (api *API) blueprintsTagHandler(writer http.ResponseWriter, request *http.R
 // Since the solver uses the distro name to namespace cache, it is important to use the same distro
 // name as the one used to get the repositories.
 func (api *API) depsolve(packageSets map[string][]rpmmd.PackageSet, distroName string, arch distro.Arch) (map[string][]rpmmd.PackageSpec, error) {
-
 	distro := arch.Distro()
 	platformID := distro.ModulePlatformID()
 	releasever := distro.Releasever()
@@ -2293,7 +2289,7 @@ func (api *API) depsolve(packageSets map[string][]rpmmd.PackageSet, distroName s
 	depsolvedSets := make(map[string][]rpmmd.PackageSpec, len(packageSets))
 
 	for name, pkgSet := range packageSets {
-		res, err := solver.Depsolve(pkgSet)
+		res, _, err := solver.Depsolve(pkgSet)
 		if err != nil {
 			return nil, err
 		}
@@ -2307,7 +2303,6 @@ func (api *API) depsolve(packageSets map[string][]rpmmd.PackageSet, distroName s
 }
 
 func (api *API) resolveContainers(sourceSpecs map[string][]container.SourceSpec, archName string) (map[string][]container.Spec, error) {
-
 	specs := make(map[string][]container.Spec, len(sourceSpecs))
 
 	// shortcut
@@ -2333,7 +2328,6 @@ func (api *API) resolveContainers(sourceSpecs map[string][]container.SourceSpec,
 		}
 
 		jobId, err := api.workers.EnqueueContainerResolveJob(&job, "")
-
 		if err != nil {
 			return specs, err
 		}
@@ -2342,7 +2336,6 @@ func (api *API) resolveContainers(sourceSpecs map[string][]container.SourceSpec,
 
 		for {
 			jobInfo, err := api.workers.ContainerResolveJobInfo(jobId, &result)
-
 			if err != nil {
 				return specs, err
 			}
@@ -2604,7 +2597,7 @@ func (api *API) composeHandler(writer http.ResponseWriter, request *http.Request
 		return
 	}
 
-	mf, err := manifest.Serialize(packageSets, containerSpecs, ostreeCommitSpecs)
+	mf, err := manifest.Serialize(packageSets, containerSpecs, ostreeCommitSpecs, nil)
 	if err != nil {
 		errors := responseError{
 			ID:  "ManifestCreationFailed",
@@ -3218,7 +3211,7 @@ func (api *API) composeMetadataHandler(writer http.ResponseWriter, request *http
 	tw := tar.NewWriter(writer)
 	hdr := &tar.Header{
 		Name:    uuid.String() + ".json",
-		Mode:    0600,
+		Mode:    0o600,
 		Size:    int64(len(metadata)),
 		ModTime: time.Now().Truncate(time.Second),
 	}
@@ -3287,7 +3280,7 @@ func (api *API) composeResultsHandler(writer http.ResponseWriter, request *http.
 	tw := tar.NewWriter(writer)
 	hdr := &tar.Header{
 		Name:    uuid.String() + ".json",
-		Mode:    0644,
+		Mode:    0o644,
 		Size:    int64(len(metadata)),
 		ModTime: time.Now().Truncate(time.Second),
 	}
@@ -3304,7 +3297,7 @@ func (api *API) composeResultsHandler(writer http.ResponseWriter, request *http.
 
 		hdr = &tar.Header{
 			Name:    "logs/osbuild.log",
-			Mode:    0644,
+			Mode:    0o644,
 			Size:    int64(fileContents.Len()),
 			ModTime: time.Now().Truncate(time.Second),
 		}
@@ -3318,7 +3311,7 @@ func (api *API) composeResultsHandler(writer http.ResponseWriter, request *http.
 	if err == nil {
 		hdr = &tar.Header{
 			Name:    uuid.String() + "-" + compose.ImageBuild.ImageType.Filename(),
-			Mode:    0644,
+			Mode:    0o644,
 			Size:    int64(fileSize),
 			ModTime: time.Now().Truncate(time.Second),
 		}
@@ -3388,7 +3381,7 @@ func (api *API) composeLogsHandler(writer http.ResponseWriter, request *http.Req
 
 	header := &tar.Header{
 		Name:    "logs/osbuild.log",
-		Mode:    0644,
+		Mode:    0o644,
 		Size:    int64(fileContents.Len()),
 		ModTime: time.Now().Truncate(time.Second),
 	}
@@ -3609,7 +3602,7 @@ func (api *API) depsolveBlueprint(bp blueprint.Blueprint) ([]rpmmd.PackageSpec, 
 	}
 
 	solver := api.solver.NewWithConfig(d.ModulePlatformID(), d.Releasever(), arch, d.Name())
-	solved, err := solver.Depsolve([]rpmmd.PackageSet{{Include: bp.GetPackages(), Repositories: repos}})
+	solved, _, err := solver.Depsolve([]rpmmd.PackageSet{{Include: bp.GetPackages(), Repositories: repos}})
 	if err != nil {
 		return nil, err
 	}

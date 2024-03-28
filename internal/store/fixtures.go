@@ -41,8 +41,8 @@ type Fixture struct {
 }
 
 func FixtureBase(hostDistroName, hostArchName string) *Fixture {
-	var bName = "test"
-	var b = blueprint.Blueprint{
+	bName := "test"
+	b := blueprint.Blueprint{
 		Name:           bName,
 		Version:        "0.0.0",
 		Packages:       []blueprint.Package{},
@@ -51,9 +51,9 @@ func FixtureBase(hostDistroName, hostArchName string) *Fixture {
 		Customizations: nil,
 	}
 
-	var date = time.Date(2019, 11, 27, 13, 19, 0, 0, time.FixedZone("UTC+1", 60*60))
+	date := time.Date(2019, 11, 27, 13, 19, 0, 0, time.FixedZone("UTC+1", 60*60))
 
-	var awsTarget = &target.Target{
+	awsTarget := &target.Target{
 		Uuid:      uuid.MustParse("10000000-0000-0000-0000-000000000000"),
 		Name:      target.TargetNameAWS,
 		ImageName: "awsimage",
@@ -86,7 +86,7 @@ func FixtureBase(hostDistroName, hostArchName string) *Fixture {
 		panic(fmt.Sprintf("failed to create a manifest: %v", err))
 	}
 
-	mf, err := manifest.Serialize(nil, nil, nil)
+	mf, err := manifest.Serialize(nil, nil, nil, nil)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create a manifest: %v", err))
 	}
@@ -106,7 +106,8 @@ func FixtureBase(hostDistroName, hostArchName string) *Fixture {
 			Version: "4.2.2",
 			Release: "1.fc35",
 			Arch:    hostArchName,
-		}}
+		},
+	}
 
 	s.blueprints[bName] = b
 
@@ -185,8 +186,8 @@ func FixtureBase(hostDistroName, hostArchName string) *Fixture {
 }
 
 func FixtureFinished(hostDistroName, hostArchName string) *Fixture {
-	var bName = "test"
-	var b = blueprint.Blueprint{
+	bName := "test"
+	b := blueprint.Blueprint{
 		Name:           bName,
 		Version:        "0.0.0",
 		Packages:       []blueprint.Package{},
@@ -195,9 +196,9 @@ func FixtureFinished(hostDistroName, hostArchName string) *Fixture {
 		Customizations: nil,
 	}
 
-	var date = time.Date(2019, 11, 27, 13, 19, 0, 0, time.FixedZone("UTC+1", 60*60))
+	date := time.Date(2019, 11, 27, 13, 19, 0, 0, time.FixedZone("UTC+1", 60*60))
 
-	var gcpTarget = &target.Target{
+	gcpTarget := &target.Target{
 		Uuid:      uuid.MustParse("20000000-0000-0000-0000-000000000000"),
 		Name:      target.TargetNameGCP,
 		ImageName: "localimage",
@@ -206,7 +207,7 @@ func FixtureFinished(hostDistroName, hostArchName string) *Fixture {
 		Options:   &target.GCPTargetOptions{},
 	}
 
-	var awsTarget = &target.Target{
+	awsTarget := &target.Target{
 		Uuid:      uuid.MustParse("10000000-0000-0000-0000-000000000000"),
 		Name:      target.TargetNameAWS,
 		ImageName: "awsimage",
@@ -236,7 +237,7 @@ func FixtureFinished(hostDistroName, hostArchName string) *Fixture {
 		panic(fmt.Sprintf("failed to create a manifest: %v", err))
 	}
 
-	mf, err := manifest.Serialize(nil, nil, nil)
+	mf, err := manifest.Serialize(nil, nil, nil, nil)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create a manifest: %v", err))
 	}
@@ -256,7 +257,8 @@ func FixtureFinished(hostDistroName, hostArchName string) *Fixture {
 			Version: "4.2.2",
 			Release: "1.fc35",
 			Arch:    hostArchName,
-		}}
+		},
+	}
 
 	s.blueprints[bName] = b
 	s.composes = map[uuid.UUID]Compose{
@@ -320,8 +322,8 @@ func FixtureFinished(hostDistroName, hostArchName string) *Fixture {
 }
 
 func FixtureEmpty(hostDistroName, hostArchName string) *Fixture {
-	var bName = "test"
-	var b = blueprint.Blueprint{
+	bName := "test"
+	b := blueprint.Blueprint{
 		Name:           bName,
 		Version:        "0.0.0",
 		Packages:       []blueprint.Package{},
@@ -380,8 +382,8 @@ func FixtureEmpty(hostDistroName, hostArchName string) *Fixture {
 // FixtureOldChanges contains a blueprint and old changes
 // This simulates restarting the service and losing the old blueprints
 func FixtureOldChanges(hostDistroName, hostArchName string) *Fixture {
-	var bName = "test-old-changes"
-	var b = blueprint.Blueprint{
+	bName := "test-old-changes"
+	b := blueprint.Blueprint{
 		Name:           bName,
 		Version:        "0.0.0",
 		Packages:       []blueprint.Package{},
@@ -428,8 +430,8 @@ func FixtureOldChanges(hostDistroName, hostArchName string) *Fixture {
 
 // Fixture to use for checking job queue files
 func FixtureJobs(hostDistroName, hostArchName string) *Fixture {
-	var bName = "test"
-	var b = blueprint.Blueprint{
+	bName := "test"
+	b := blueprint.Blueprint{
 		Name:           bName,
 		Version:        "0.0.0",
 		Packages:       []blueprint.Package{},
@@ -438,9 +440,9 @@ func FixtureJobs(hostDistroName, hostArchName string) *Fixture {
 		Customizations: nil,
 	}
 
-	var date = time.Date(2019, 11, 27, 13, 19, 0, 0, time.FixedZone("UTC+1", 60*60))
+	date := time.Date(2019, 11, 27, 13, 19, 0, 0, time.FixedZone("UTC+1", 60*60))
 
-	var awsTarget = &target.Target{
+	awsTarget := &target.Target{
 		Uuid:      uuid.MustParse("10000000-0000-0000-0000-000000000000"),
 		Name:      target.TargetNameAWS,
 		ImageName: "awsimage",
@@ -470,7 +472,7 @@ func FixtureJobs(hostDistroName, hostArchName string) *Fixture {
 		panic(fmt.Sprintf("failed to create a manifest: %v", err))
 	}
 
-	mf, err := manifest.Serialize(nil, nil, nil)
+	mf, err := manifest.Serialize(nil, nil, nil, nil)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create a manifest: %v", err))
 	}
@@ -490,7 +492,8 @@ func FixtureJobs(hostDistroName, hostArchName string) *Fixture {
 			Version: "4.2.2",
 			Release: "1.fc35",
 			Arch:    hostArchName,
-		}}
+		},
+	}
 
 	s.blueprints[bName] = b
 	s.composes = map[uuid.UUID]Compose{

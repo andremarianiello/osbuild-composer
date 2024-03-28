@@ -507,7 +507,6 @@ func serializeManifest(ctx context.Context, manifestSource *manifest.Manifest, w
 		// Container resolve job
 		var result worker.ContainerResolveJobResult
 		_, err := workers.ContainerResolveJobInfo(containerResolveJobID, &result)
-
 		if err != nil {
 			reason := "Error reading container resolve job status"
 			jobResult.JobError = clienterrors.WorkerClientError(clienterrors.ErrorReadingJobStatus, reason, nil)
@@ -538,7 +537,6 @@ func serializeManifest(ctx context.Context, manifestSource *manifest.Manifest, w
 				ImageID:    resultSpec.ImageID,
 				ListDigest: resultSpec.ListDigest,
 			}
-
 		}
 		containerSpecs = map[string][]container.Spec{
 			containerEmbedPipeline: pipelineSpecs,
@@ -549,7 +547,6 @@ func serializeManifest(ctx context.Context, manifestSource *manifest.Manifest, w
 	if ostreeResolveJobID != uuid.Nil {
 		var result worker.OSTreeResolveJobResult
 		_, err := workers.OSTreeResolveJobInfo(ostreeResolveJobID, &result)
-
 		if err != nil {
 			reason := "Error reading ostree resolve job status"
 			logrus.Errorf("%s: %v", reason, err)
@@ -591,7 +588,7 @@ func serializeManifest(ctx context.Context, manifestSource *manifest.Manifest, w
 		}
 	}
 
-	ms, err := manifestSource.Serialize(depsolveResults.PackageSpecs, containerSpecs, ostreeCommitSpecs)
+	ms, err := manifestSource.Serialize(depsolveResults.PackageSpecs, containerSpecs, ostreeCommitSpecs, nil)
 	if err != nil {
 		reason := "Error serializing manifest"
 		jobResult.JobError = clienterrors.WorkerClientError(clienterrors.ErrorManifestGeneration, reason, nil)

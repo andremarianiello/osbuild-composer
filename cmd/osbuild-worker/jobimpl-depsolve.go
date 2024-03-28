@@ -54,7 +54,7 @@ func (impl *DepsolveJobImpl) depsolve(packageSets map[string][]rpmmd.PackageSet,
 
 	depsolvedSets := make(map[string][]rpmmd.PackageSpec)
 	for name, pkgSet := range packageSets {
-		res, err := solver.Depsolve(pkgSet)
+		res, _, err := solver.Depsolve(pkgSet)
 		if err != nil {
 			return nil, err
 		}

@@ -67,7 +67,7 @@ func TestCrossArchDepsolve(t *testing.T) {
 					assert.NoError(t, err)
 
 					for _, set := range manifest.GetPackageSetChains() {
-						_, err = solver.Depsolve(set)
+						_, _, err = solver.Depsolve(set)
 						assert.NoError(t, err)
 					}
 				})
@@ -108,7 +108,7 @@ func TestDepsolvePackageSets(t *testing.T) {
 
 	gotPackageSpecsSets := make(map[string][]rpmmd.PackageSpec, len(imagePkgSets))
 	for name, pkgSet := range imagePkgSets {
-		res, err := solver.Depsolve(pkgSet)
+		res, _, err := solver.Depsolve(pkgSet)
 		if err != nil {
 			require.Nil(t, err)
 		}

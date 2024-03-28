@@ -136,6 +136,10 @@ type OSCustomizations struct {
 	Files       []*fsnode.File
 
 	FIPS bool
+
+	// NoBLS configures the image bootloader with traditional menu entries
+	// instead of BLS. Required for legacy systems like RHEL 7.
+	NoBLS bool
 }
 
 // OS represents the filesystem tree of the target image. This roughly
@@ -171,9 +175,6 @@ type OS struct {
 	platform  platform.Platform
 	kernelVer string
 
-	// NoBLS configures the image bootloader with traditional menu entries
-	// instead of BLS. Required for legacy systems like RHEL 7.
-	NoBLS     bool
 	OSProduct string
 	OSVersion string
 	OSNick    string
@@ -338,7 +339,7 @@ func (p *OS) getContainerSpecs() []container.Spec {
 	return p.containerSpecs
 }
 
-func (p *OS) serializeStart(packages []rpmmd.PackageSpec, containers []container.Spec, commits []ostree.CommitSpec) {
+func (p *OS) serializeStart(packages []rpmmd.PackageSpec, containers []container.Spec, commits []ostree.CommitSpec, rpmRepos []rpmmd.RepoConfig) {
 	if len(p.packageSpecs) > 0 {
 		panic("double call to serializeStart()")
 	}
@@ -355,6 +356,8 @@ func (p *OS) serializeStart(packages []rpmmd.PackageSpec, containers []container
 	if p.KernelName != "" {
 		p.kernelVer = rpmmd.GetVerStrFromPackageSpecListPanic(p.packageSpecs, p.KernelName)
 	}
+
+	p.repos = append(p.repos, rpmRepos...)
 }
 
 func (p *OS) serializeEnd() {
